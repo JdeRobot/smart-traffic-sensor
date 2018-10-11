@@ -1,5 +1,5 @@
-# traffic-monitor
-smart-traffic-senosr is an advanced vision based vehicles traffic monitoring software, able to gather several traffic stats using a simple stationary camera.
+# smart-traffic-sensor
+**smart-traffic-senosr** (a.k.a STS) is an advanced vision based vehicles traffic monitoring software, able to gather several traffic stats using a simple stationary camera.
 STS sofware has been initiated as part of my [Ph.D thesis](http://rua.ua.es/dspace/handle/10045/68987#.Wa-sQzgxSGg.facebook). STS is able to process traffic
 flow on multiple lanes simultaneously in real-time. In the current version the software is able to:
 * Classify the vehicles into five categories: Motorcycle, Car, Van, Bus and Truck
