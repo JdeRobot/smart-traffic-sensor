@@ -18,7 +18,7 @@ Note: Software was tested with Opencv 3.1 FFMPEG support must be enabled.
 
 #### 2.3 Build
 
-     cd traffic-monitor
+     cd smart-traffic-sensor
      mkdir build
      cd build
      cmake ../src/
@@ -55,11 +55,12 @@ The second one is the camera configuration/calibration file and uses the followi
         rows 576
 
 The above values must be updated to fit the input video geometry. This file can be done by using the semi-automated calibration tool provided
-by the traffic-monitor software. For this the user has to enable the **Auto calibration** option and use the calibration dialog
+by the smart-traffic-sensor software. For this the user has to enable the **Auto calibration** option and use the calibration dialog
 (View > Show Camera Calibration). [Following video](https://www.youtube.com/watch?v=_JoWBaWCNTk) explains the calibration process.
 
 ### 4 Usage
 
+    pushd . && cd src/lib/ && cat libtensorflow*.so_? > libtensorflow_cc.so && popd
     cd build
     ln -s ../cfg/trafficmonitor.cfg trafficmonitor.cfg
     ./trafficmonitor path_to_video_file
