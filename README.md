@@ -63,6 +63,7 @@ by the smart-traffic-sensor software. For this the user has to enable the **Auto
     pushd . && cd src/lib/ && cat libtensorflow*.so_? > libtensorflow_cc.so && popd
     cd build
     ln -s ../cfg/trafficmonitor.cfg trafficmonitor.cfg
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.2/lib64
     ./trafficmonitor path_to_video_file
     ./trafficmonitor ../traffic-videos/video-0042-o-4.MPG (i.e)
 
