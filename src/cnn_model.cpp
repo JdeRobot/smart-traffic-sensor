@@ -2,7 +2,7 @@
 #include <iostream>
 #include "cnn_model.h"
 
-std::string TF_PB_PATH = "./frozen_inference_graph.pb";
+std::string TF_PB_PATH = "../cfg/frozen_inference_graph.pb";
 std::string TF_LABELLIST_PATH = "./labels.txt";
 float const TF_PREDICTION_THRESSHOLD = 0.5;
 
