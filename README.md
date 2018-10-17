@@ -19,6 +19,7 @@ Note: Software was tested with Opencv 3.1 FFMPEG support must be enabled.
 #### 2.3 Build
 
      cd smart-traffic-sensor
+     pushd . && cd src/lib/ && cat libtensorflow*.so_? > libtensorflow_cc.so && popd
      mkdir build
      cd build
      cmake ../src/
@@ -60,7 +61,6 @@ by the smart-traffic-sensor software. For this the user has to enable the **Auto
 
 ### 4 Usage
 
-    pushd . && cd src/lib/ && cat libtensorflow*.so_? > libtensorflow_cc.so && popd
     cd build
     ln -s ../cfg/trafficmonitor.cfg trafficmonitor.cfg
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.2/lib64
