@@ -1,0 +1,32 @@
+# main links
+main:
+
+  - title: "Description"
+    url: /description/
+
+  - title: "Block Diagram"
+    url: /block_diagram/
+
+  - title: Installation
+    url: /installation/
+
+
+docs:
+  - title: Description
+    children:
+      - title: "Description"
+        url: /description/
+      
+
+  - title: "Block Diagram"
+    children:
+      - title: "Block Diagram"
+        url: /block_diagram/
+
+  - title: "Installation and use"
+    children:
+      - title: "Installation and Use"
+        url: /installation/
+
+
+
