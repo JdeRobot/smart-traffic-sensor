@@ -9,7 +9,7 @@
   </object>
   <object class="GtkWindow" id="mainwindow">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes"> Traffic Monitor </property>
+    <property name="title" translatable="yes"> Smart Traffic Monitor </property>
     <child>
       <placeholder/>
     </child>
@@ -51,7 +51,7 @@
           </object>
           <packing>
             <property name="x">15</property>
-            <property name="y">305</property>
+            <property name="y">330</property>
           </packing>
         </child>
         <child>
@@ -69,7 +69,7 @@
           </object>
           <packing>
             <property name="x">15</property>
-            <property name="y">280</property>
+            <property name="y">305</property>
           </packing>
         </child>
         <child>
@@ -88,7 +88,7 @@
           </object>
           <packing>
             <property name="x">180</property>
-            <property name="y">280</property>
+            <property name="y">305</property>
           </packing>
         </child>
         <child>
@@ -106,7 +106,7 @@
           </object>
           <packing>
             <property name="x">180</property>
-            <property name="y">330</property>
+            <property name="y">355</property>
           </packing>
         </child>
         <child>
@@ -387,7 +387,7 @@
           </object>
           <packing>
             <property name="x">180</property>
-            <property name="y">255</property>
+            <property name="y">280</property>
           </packing>
         </child>
         <child>
@@ -452,7 +452,7 @@
           </object>
           <packing>
             <property name="x">15</property>
-            <property name="y">387</property>
+            <property name="y">412</property>
           </packing>
         </child>
         <child>
@@ -469,7 +469,24 @@
           </object>
           <packing>
             <property name="x">16</property>
-            <property name="y">332</property>
+            <property name="y">357</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="show_trajectory">
+            <property name="label" translatable="yes">Show trajectory</property>
+            <property name="use_action_appearance">False</property>
+            <property name="width_request">150</property>
+            <property name="height_request">30</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="xalign">0.5</property>
+            <property name="draw_indicator">True</property>
+          </object>
+          <packing>
+            <property name="x">16</property>
+            <property name="y">384</property>
           </packing>
         </child>
         <child>
@@ -486,7 +503,7 @@
           </object>
           <packing>
             <property name="x">15</property>
-            <property name="y">255</property>
+            <property name="y">280</property>
           </packing>
         </child>
         <child>
@@ -503,7 +520,7 @@
           </object>
           <packing>
             <property name="x">181</property>
-            <property name="y">357</property>
+            <property name="y">382</property>
           </packing>
         </child>
         <child>
@@ -524,7 +541,7 @@
                     <property name="height_request">8</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="n_rows">6</property>
+                    <property name="n_rows">8</property>
                     <property name="n_columns">2</property>
                     <child>
                       <object class="GtkTextView" id="moto_view">
@@ -593,8 +610,8 @@
                         <property name="bottom_attach">4</property>
                       </packing>
                     </child>
-                    <child>
-                      <object class="GtkTextView" id="total_view">
+   		    <child>
+                      <object class="GtkTextView" id="small_truck_view">
                         <property name="width_request">55</property>
                         <property name="height_request">20</property>
                         <property name="visible">True</property>
@@ -608,6 +625,40 @@
                         <property name="right_attach">2</property>
                         <property name="top_attach">5</property>
                         <property name="bottom_attach">6</property>
+                      </packing>
+                    </child>
+		    <child>
+                      <object class="GtkTextView" id="tank_truck_view">
+                        <property name="width_request">55</property>
+                        <property name="height_request">20</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="pixels_above_lines">6</property>
+                        <property name="wrap_mode">word</property>
+                        <property name="justification">center</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="top_attach">6</property>
+                        <property name="bottom_attach">7</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkTextView" id="total_view">
+                        <property name="width_request">55</property>
+                        <property name="height_request">20</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="pixels_above_lines">6</property>
+                        <property name="wrap_mode">word</property>
+                        <property name="justification">center</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="top_attach">7</property>
+                        <property name="bottom_attach">8</property>
                       </packing>
                     </child>
                     <child>
@@ -662,8 +713,8 @@
                         <property name="ellipsize">middle</property>
                       </object>
                       <packing>
-                        <property name="top_attach">5</property>
-                        <property name="bottom_attach">6</property>
+                        <property name="top_attach">7</property>
+                        <property name="bottom_attach">8</property>
                       </packing>
                     </child>
                     <child>
@@ -675,6 +726,28 @@
                       <packing>
                         <property name="top_attach">4</property>
                         <property name="bottom_attach">5</property>
+                      </packing>
+                    </child>
+		    <child>
+                      <object class="GtkLabel" id="label20">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Small Truck</property>
+                      </object>
+                      <packing>
+                        <property name="top_attach">5</property>
+                        <property name="bottom_attach">6</property>
+                      </packing>
+                    </child>
+		    <child>
+                      <object class="GtkLabel" id="label21">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Tank Truck</property>
+                      </object>
+                      <packing>
+                        <property name="top_attach">6</property>
+                        <property name="bottom_attach">7</property>
                       </packing>
                     </child>
                     <child>
@@ -723,7 +796,7 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="proximity_tracking">
-            <property name="label" translatable="yes">Proximity Tarcking</property>
+            <property name="label" translatable="yes">Proximity Tracking</property>
             <property name="use_action_appearance">False</property>
             <property name="width_request">170</property>
             <property name="height_request">30</property>
@@ -769,7 +842,7 @@
           </object>
           <packing>
             <property name="x">180</property>
-            <property name="y">305</property>
+            <property name="y">330</property>
           </packing>
         </child>
         <child>
@@ -785,7 +858,7 @@
           </object>
           <packing>
             <property name="x">15</property>
-            <property name="y">359</property>
+            <property name="y">384</property>
           </packing>
         </child>
         <child>
@@ -801,7 +874,7 @@
           </object>
           <packing>
             <property name="x">180</property>
-            <property name="y">385</property>
+            <property name="y">410</property>
           </packing>
         </child>
         <child>
@@ -858,7 +931,7 @@
           </object>
           <packing>
             <property name="x">14</property>
-            <property name="y">213</property>
+            <property name="y">263</property>
           </packing>
         </child>
         <child>
@@ -877,7 +950,7 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="cnn_tracking">
-            <property name="label" translatable="yes">CNN Tracking</property>
+            <property name="label" translatable="yes">TensorFlow Tracking</property>
             <property name="width_request">122</property>
             <property name="height_request">37</property>
             <property name="visible">True</property>
@@ -888,6 +961,36 @@
           <packing>
             <property name="x">15</property>
             <property name="y">185</property>
+          </packing>
+        </child>
+	<child>
+          <object class="GtkCheckButton" id="keras_tracking">
+            <property name="label" translatable="yes">Keras Tracking</property>
+            <property name="width_request">122</property>
+            <property name="height_request">37</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="draw_indicator">True</property>
+          </object>
+          <packing>
+            <property name="x">15</property>
+            <property name="y">210</property>
+          </packing>
+        </child>
+	<child>
+          <object class="GtkCheckButton" id="darknet_tracking">
+            <property name="label" translatable="yes">Darknet Tracking</property>
+            <property name="width_request">122</property>
+            <property name="height_request">37</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="draw_indicator">True</property>
+          </object>
+          <packing>
+            <property name="x">15</property>
+            <property name="y">235</property>
           </packing>
         </child>
       </object>
