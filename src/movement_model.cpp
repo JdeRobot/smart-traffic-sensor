@@ -27,6 +27,10 @@
 #include "background_model.h"
 #include "classifier.h"
 #include "image_utils.h"
+#include <colorspacesmm.h>
+
+/*std::string DETECTION_IMAGE3 = "../detection_image/";
+int contador_file_txt3 = 0;*/
 
 namespace trafficmonitor{
 
@@ -750,6 +754,17 @@ bool MovModel::refine_blobs(Mat image, Mat blob_area, Mat bg_roi, Rect roi, Mat 
  */
 int MovModel::find_blobs(colorspaces::Image& new_frame, std::vector<Blob*>& new_blobs, bool advanced_detection)
 {
+   Mat new_frame1(new_frame);
+   int inputHeight = new_frame1.size().height;
+   int inputWidth = new_frame1.size().width;
+   cv::Mat outputImg(inputHeight, inputWidth, CV_8UC3);
+   new_frame1.convertTo(outputImg, CV_8UC3);
+	
+   cv::Mat rgbImage;
+   cv::cvtColor(new_frame1,rgbImage,CV_RGB2BGR);
+// Crea un fichero de salida
+    //imwrite( DETECTION_IMAGE3+std::to_string(contador_file_txt3)+".jpg", rgbImage );
+
    if (!initialized)
    {
       //TODO: log error
@@ -784,6 +799,7 @@ int MovModel::find_blobs(colorspaces::Image& new_frame, std::vector<Blob*>& new_
       movement_matrix = {STATIC};
       opt_growing(new_frame, Road::Instance()->get_roi(), new_blobs);
    }
+    //contador_file_txt3 = contador_file_txt3 + 1;
 }
 
 /**

@@ -123,11 +123,13 @@ void Stats::init(bool classification_active)
              vehicle.get_current_3d_center().Y,
              vehicle.get_current_3d_center().Z);
 
-      printf("                      MC=%.2f CA=%.2f VA=%.2f TR=%.2f \n\n",
+      printf("                      MC=%.2f CA=%.2f VA=%.2f TR=%.2f STR=%.2f TTR=%.2f \n\n",
              vehicle.get_class_prob(MOTORCYCLE),
              vehicle.get_class_prob(CAR),
              vehicle.get_class_prob(VAN),
-             vehicle.get_class_prob(TRUCK));
+             vehicle.get_class_prob(TRUCK),
+ 	     vehicle.get_class_prob(SMALL_TRUCK),
+	     vehicle.get_class_prob(TANK_TRUCK));
 
       inc_model_count(vehicle.get_matched_class());
 

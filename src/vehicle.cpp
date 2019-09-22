@@ -24,7 +24,7 @@ Vehicle::Vehicle(const Blob &obj): Blob(){}
  */
 void Vehicle::init(){
    Blob::init();
-   category = INVALID_VEHICLE_CLASS;
+   category_vehicle = INVALID_VEHICLE_CLASS;
    memset(categories_prob_acm,0,sizeof(categories_prob_acm));
    memset(&projection,0,sizeof(projection));
 }
@@ -43,8 +43,13 @@ void Vehicle::set_projection(Tpolygon* p_projection){
  */
 tvehicle_category Vehicle::get_matched_class() const
 {
-   if (INVALID_VEHICLE_CLASS != category)
-      return category;
+   /* Si nos encontramos usando Deep Learning se determinará la categoría con lo 
+      que se haya obtenido en la detección*/
+   if(!vehicle_tracking_klt)
+   {
+       if (INVALID_VEHICLE_CLASS != category_vehicle)
+           return category_vehicle;
+   }
 
    tvehicle_category veh=INVALID_VEHICLE_CLASS;
    tvehicle_category matched_class=INVALID_VEHICLE_CLASS;
@@ -79,7 +84,7 @@ void Vehicle::start_tracking(timeval timestamp)
 void Vehicle::end_of_tracking(timeval timestamp)
 {
    Stats* stats = Stats::Instance();
-
+   
    /** NOTE: end of tracking MUST be called before
     *  collecting stats
     */

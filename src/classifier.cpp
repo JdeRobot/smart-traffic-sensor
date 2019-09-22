@@ -824,7 +824,7 @@ void Classifier::update_vehicle(Vehicle* vehicle){
    Tpolygon projection;
    PinHoleCamera* camera = PinHoleCamera::Instance();
 
-   printf("Classification of vehicle %d life=%d category=%s(%d)\n", vehicle->get_id(), vehicle->get_life(), VehicleModel::get_model_name(vehicle->get_category()), vehicle->get_category());
+   /*printf("Classification of vehicle %d life=%d category=%s(%d)\n", vehicle->get_id(), vehicle->get_life(), VehicleModel::get_model_name(vehicle->get_category()), vehicle->get_category());*/
 
    centro.x = vehicle->get_center_of_mass().x;
    centro.y = vehicle->get_center_of_mass().y;
@@ -855,18 +855,20 @@ void Classifier::classify_vehicle(Vehicle* vehicle, colorspaces::Image& inputIma
 
    if (vehicle->ocluded)
    {
-     CATEGORY_LOG("(o) Results of vehicle %d life=%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n"
+     CATEGORY_LOG("(o) Results of vehicle %d life=%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f\n"
                   ,vehicle->get_id()
                   ,vehicle->get_life()
                   ,vehicle->get_class_prob(MOTORCYCLE)
                   ,vehicle->get_class_prob(CAR)
                   ,vehicle->get_class_prob(VAN)
                   ,vehicle->get_class_prob(TRUCK)
-                  ,vehicle->get_class_prob(BUS));
+                  ,vehicle->get_class_prob(BUS)
+		  ,vehicle->get_class_prob(SMALL_TRUCK)
+		  ,vehicle->get_class_prob(TANK_TRUCK));
      return;
    }
 
-   CATEGORY_LOG("Classification of vehicle %d life=%d\n", vehicle->get_id(), vehicle->get_life());
+   /*CATEGORY_LOG("Classification of vehicle %d life=%d\n", vehicle->get_id(), vehicle->get_life());*/
 
    for (category=MOTORCYCLE; category<MAX_MODELS; category++)
    {
@@ -933,14 +935,16 @@ void Classifier::classify_vehicle(Vehicle* vehicle, colorspaces::Image& inputIma
                    (float)b/(float)blob);
    }
 
-   CATEGORY_LOG("Results of vehicle %d life=%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n"
+   CATEGORY_LOG("Results of vehicle %d life=%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n"
                 ,vehicle->get_id()
                 ,vehicle->get_life()
                 ,vehicle->get_class_prob(MOTORCYCLE)
                 ,vehicle->get_class_prob(CAR)
                 ,vehicle->get_class_prob(VAN)
                 ,vehicle->get_class_prob(TRUCK)
-                ,vehicle->get_class_prob(BUS));
+                ,vehicle->get_class_prob(BUS)
+		,vehicle->get_class_prob(SMALL_TRUCK)
+		,vehicle->get_class_prob(TANK_TRUCK));
 
    // if (CLASS_DEBUG)
    //    vehicle->projection = models_projection[Graphics::get_selected_model_for_debuging()];

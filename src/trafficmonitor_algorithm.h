@@ -12,6 +12,9 @@
 #include "trafficmonitor_config.h"
 #include "road_detection.h"
 #include "classifier.h"
+#include <boost/shared_ptr.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include "tensorflow_model.h"
 
 using std::string;
 using std::vector;
@@ -92,21 +95,29 @@ public:
     */
    bool iteration(const colorspaces::Image& currentImg, const timeval timeStamp);
    void processFirstFrame(const colorspaces::Image& firstFrame, const timeval timeStamp);
+   int getMeanDurationTime();
 
 private:
 
    TrafficMonitorAlgorithmState _state;
    TrafficMonitorAlgorithmConfig _cfg;
    Classifier m_classifier;
+   std::vector<long> durationVector;
+   boost::posix_time::ptime Time_traffic;
+   
 
    /**
     *
     */
-   void classify_vehicles();
+   void classify_vehicles(int klt_vehicle);
    void update_vehicles_trajectories_history();
    bool feature_tracking(bool klt_only);
    bool proximity_tracking();
    bool cnn_tracking();
+   bool keras_tracking();
+   bool darknet_tracking();
+
+
 };
 
 typedef std::tr1::shared_ptr<TrafficMonitorAlgorithm> TrafficMonitorAlgorithmPtr;

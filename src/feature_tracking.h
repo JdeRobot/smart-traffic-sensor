@@ -117,6 +117,11 @@ private:
                                vector<Blob*>& tracked_blobs,
                                vector<Blob*>& tmp_blobs,
                                unsigned int num_blobs);
+   void process_detected_blobs_deep_learning(IplImage* frame,
+                               timeval timestamp,
+                               vector<Blob*>& tracked_blobs,
+                               vector<Blob*>& tmp_blobs,
+                               unsigned int num_blobs);
 };
 }        
 #endif

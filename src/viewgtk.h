@@ -72,6 +72,7 @@ private:
    void MyCanny(Mat&src, Mat& dst);
 
    //Menu connections
+   void onQuitToggled();
    void onCheckmenuitemShowInputVideoToggled();
    void onCheckmenuitemShowBackgrondToggled();
    void onCheckmenuitemShowCameraCalibrationToggled();
@@ -108,6 +109,7 @@ private:
    Widget<Gtk::CheckMenuItem> checkmenuitemShowInputVideo;
    Widget<Gtk::CheckMenuItem> checkmenuitemShowBgImage;
    Widget<Gtk::CheckMenuItem> checkmenuitemShowCameraCalibration;
+   Widget<Gtk::ImageMenuItem> imagemenuitem5;
 
    //Buttons
    Widget<Gtk::ToggleButton> capture;
@@ -125,6 +127,7 @@ private:
    Widget<Gtk::CheckButton> show_tracking_info;
    Widget<Gtk::CheckButton> show_categories;
    Widget<Gtk::CheckButton> show_oclusion;
+   Widget<Gtk::CheckButton> show_trajectory;
    Widget<Gtk::CheckButton> show_bounding_box;
    Widget<Gtk::CheckButton> show_klt_points;
    Widget<Gtk::CheckButton> show_projections;
@@ -142,6 +145,8 @@ private:
    Widget<Gtk::CheckButton> classify;
    Widget<Gtk::CheckButton> klt_tracking;
    Widget<Gtk::CheckButton> cnn_tracking;
+   Widget<Gtk::CheckButton> keras_tracking;
+   Widget<Gtk::CheckButton> darknet_tracking;
    Widget<Gtk::CheckButton> proximity_tracking;
    Widget<Gtk::CheckButton> switch_detection_zone;
    Widget<Gtk::CheckButton> advanced_detection;
@@ -152,6 +157,8 @@ private:
    Widget<Gtk::TextView> car_view;
    Widget<Gtk::TextView> van_view;
    Widget<Gtk::TextView> truck_view;
+   Widget<Gtk::TextView> small_truck_view;
+   Widget<Gtk::TextView> tank_truck_view;
    Widget<Gtk::TextView> bus_view;
    Widget<Gtk::TextView> total_view;
    Widget<Gtk::TextView> theta_view;

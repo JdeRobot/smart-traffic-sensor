@@ -28,7 +28,7 @@ public:
   void set_road_points(std::vector<Tpoint2D>& road_points) {roadPoints = road_points;};
 
   bool isValid();
-  bool trackingIsActive() const {return (proximityTrackingActive || kltTrackingActive || cnnTrackingActive);};
+  bool trackingIsActive() const {return (proximityTrackingActive || kltTrackingActive || cnnTrackingActive || kerasTrackingActive || darknetTrackingActive);};
   void show();
   void save();
   void loadConfiguration();
@@ -41,6 +41,7 @@ public:
   bool showCategories;
   bool showBoundingBox;
   bool showOclusion;
+  bool showTrajectory;
   bool showKltPoints;
   bool showBgMask;
   bool showOrigBgMask;
@@ -58,6 +59,8 @@ public:
   bool kltTrackingActive;
   bool proximityTrackingActive;
   bool cnnTrackingActive;
+  bool kerasTrackingActive;
+  bool darknetTrackingActive;
   bool pixelTrackTrackingActive;
   bool shadowDetectionActive;
   bool cameraAutoCalibration;

@@ -23,11 +23,13 @@
 
 const char* VehicleModel::models_names[MAX_MODELS] = {
    "Invalid",
-   "Motocycle",
+   "Motorcycle",
    "Car",
    "Van",
-   "Truck",
    "Bus",
+   "Truck",
+   "Small Truck",
+   "Tank Truck",
 };
 
 const char* VehicleModel::models_description[MAX_MODELS] = {
@@ -35,8 +37,10 @@ const char* VehicleModel::models_description[MAX_MODELS] = {
    "Motorcycle",
    "Car",
    "Van",
-   "Truck",
    "Bus",
+   "Truck",
+   "Small Truck",
+   "Tank Truck",
 };
 
 /**
@@ -64,11 +68,17 @@ T3dmodel VehicleModel::models_dimensions[MAX_MODELS] = {
    /** VAN **/
    {2, 2, 7},
    
+   /** BUS **/
+   {3, 2.5, 12.0},
+
    /** TRUCK **/
    {4, 2.5, 14},
 
-   /** BUS **/
-   {3, 2.5, 12.0},
+   /** SMALL TRUCK **/
+   {4, 2.5, 14},
+   
+   /** TANK TRUCK **/
+   {4, 2.5, 14}
 };
 
 /**
