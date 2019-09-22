@@ -19,6 +19,8 @@
  *  Authors : David Lobato Bravo <dav.lobato@gmail.com>
  *
  */
+#include <thread> 
+#include <chrono> 
 #include <stdlib.h>
 #include <gtkmm.h>
 #include <gdkmm.h>
@@ -59,7 +61,7 @@ namespace trafficmonitor {
 #define LEFT_BUTTON 1
 #define RIGHT_BUTTON 3
 
-  static const char* models_colors[MAX_MODELS] = {"Red", "Yellow", "Green", "Blue", "Pink", "Aqua"};
+  static const char* models_colors[MAX_MODELS] = {"Red", "Yellow", "Green", "Blue", "Pink", "Aqua","Black","White"};
 
   ViewGtk::ViewGtk(Model& _model, const std::string& gladepath) throw ():
     View(_model),
@@ -76,6 +78,7 @@ namespace trafficmonitor {
     INIT_WIDGET(checkmenuitemShowInputVideo, builder),
     INIT_WIDGET(checkmenuitemShowBgImage , builder),
     INIT_WIDGET(checkmenuitemShowCameraCalibration, builder),
+    INIT_WIDGET(imagemenuitem5, builder),
 
     //ComboBoxes
     INIT_WIDGET(comboboxBGModel, builder),
@@ -102,6 +105,7 @@ namespace trafficmonitor {
     INIT_WIDGET(show_tracking_info, builder),
     INIT_WIDGET(show_categories, builder),
     INIT_WIDGET(show_oclusion, builder),
+    INIT_WIDGET(show_trajectory, builder),
     INIT_WIDGET(show_bounding_box, builder),
     INIT_WIDGET(show_klt_points, builder),
     INIT_WIDGET(show_projections, builder),
@@ -114,6 +118,8 @@ namespace trafficmonitor {
     INIT_WIDGET(cnn_tracking, builder),
     INIT_WIDGET(proximity_tracking, builder),
     INIT_WIDGET(advanced_detection, builder),
+    INIT_WIDGET(keras_tracking, builder),
+    INIT_WIDGET(darknet_tracking, builder),
 
     //Vertical status bars
     INIT_WIDGET(detection_zone_perc_bar, builder),
@@ -125,6 +131,8 @@ namespace trafficmonitor {
     INIT_WIDGET(car_view , builder),
     INIT_WIDGET(van_view , builder),
     INIT_WIDGET(truck_view , builder),
+    INIT_WIDGET(small_truck_view , builder),
+    INIT_WIDGET(tank_truck_view , builder),
     INIT_WIDGET(bus_view , builder),
     INIT_WIDGET(total_view, builder),
     INIT_WIDGET(theta_view, builder),
@@ -152,6 +160,8 @@ namespace trafficmonitor {
     classify->set_active(cfg.classify);
     klt_tracking->set_active(cfg.kltTrackingActive);
     cnn_tracking->set_active(cfg.cnnTrackingActive);
+    keras_tracking->set_active(cfg.kerasTrackingActive);
+    darknet_tracking->set_active(cfg.darknetTrackingActive);
     proximity_tracking->set_active(cfg.proximityTrackingActive);
     advanced_detection->set_active(cfg.advancedDetection);
     switch_detection_zone->set_active(cfg.switchDetectionZone);
@@ -162,6 +172,7 @@ namespace trafficmonitor {
     show_categories->set_active(cfg.showCategories);
     show_bounding_box->set_active(cfg.showBoundingBox);
     show_oclusion->set_active(cfg.showOclusion);
+    show_trajectory->set_active(cfg.showTrajectory);
     show_bg_mask->set_active(cfg.showBgMask);
     show_orig_bg_mask->set_active(cfg.showOrigBgMask);
     show_klt_points->set_active(cfg.showKltPoints);
@@ -197,6 +208,7 @@ namespace trafficmonitor {
     show_tracking_info->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
     show_categories->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
     show_oclusion->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
+    show_trajectory->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
     show_bounding_box->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
     show_klt_points->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
     show_projections->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
@@ -211,6 +223,8 @@ namespace trafficmonitor {
     shadow_detection->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
     klt_tracking->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
     cnn_tracking->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
+    keras_tracking->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
+    darknet_tracking->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
     proximity_tracking->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
     advanced_detection->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::update_ctl));
 
@@ -240,6 +254,8 @@ namespace trafficmonitor {
     checkmenuitemShowCameraCalibration->set_active(true);
     checkmenuitemShowCameraCalibration->signal_toggled().connect(sigc::mem_fun(this, &ViewGtk::onCheckmenuitemShowCameraCalibrationToggled));
 
+     
+     imagemenuitem5->signal_activate().connect(sigc::mem_fun(this, &ViewGtk::onQuitToggled));
     //update widget values according with model
     mainwindow->show();
     input_image_window->show();
@@ -380,7 +396,9 @@ namespace trafficmonitor {
 
       if (cfg.showTrackingInfo)
       {
-        if (cfg.classify && ((vehicle->get_matched_class() == TRUCK) || (vehicle->get_matched_class() == BUS)))
+        /*if (cfg.classify && ((vehicle->get_matched_class() == TRUCK) || (vehicle->get_matched_class() == BUS)))*/
+      	if (cfg.classify && ((vehicle->get_matched_class() == TRUCK) || (vehicle->get_matched_class() == BUS) || (vehicle->get_matched_class() == SMALL_TRUCK) || (vehicle->get_matched_class() == TANK_TRUCK)))
+	
         {
           draw_vehicle_rear(vehicle);
         }
@@ -537,6 +555,7 @@ namespace trafficmonitor {
     //FIXME: gui use main thread, we have to move this to another thread
     while (gtkmain.events_pending())
       gtkmain.iteration();
+	//std::this_thread::sleep_for (std::chrono::seconds(1));
   }
 
 //main window
@@ -807,6 +826,14 @@ namespace trafficmonitor {
     bus_view->get_buffer()->set_text(ss.str());
     ss.str("");
 
+    ss << stats->get_model_count(SMALL_TRUCK);
+    small_truck_view->get_buffer()->set_text(ss.str());
+    ss.str("");
+
+    ss << stats->get_model_count(TANK_TRUCK);
+    tank_truck_view->get_buffer()->set_text(ss.str());
+    ss.str("");
+
     int sum=0;
     tvehicle_category veh,init_class;
 
@@ -830,6 +857,8 @@ namespace trafficmonitor {
     van_view->show();
     truck_view->show();
     bus_view->show();
+    small_truck_view->show();
+    tank_truck_view->show();
     total_view->show();
   }
 
@@ -929,6 +958,8 @@ namespace trafficmonitor {
     cfg.kltTrackingActive        = klt_tracking->get_active();
     cfg.proximityTrackingActive  = proximity_tracking->get_active();
     cfg.cnnTrackingActive        = cnn_tracking->get_active();
+    cfg.kerasTrackingActive      = keras_tracking->get_active();
+    cfg.darknetTrackingActive    = darknet_tracking->get_active();
     cfg.cameraAutoCalibration    = auto_calib->get_active();
     cfg.advancedDetection        = advanced_detection->get_active();
 
@@ -938,6 +969,7 @@ namespace trafficmonitor {
     cfg.showCategories           = show_categories->get_active();
     cfg.showBoundingBox          = show_bounding_box->get_active();
     cfg.showOclusion             = show_oclusion->get_active();
+    cfg.showTrajectory           = show_trajectory->get_active();
     cfg.showBgMask               = show_bg_mask->get_active();
     cfg.showOrigBgMask           = show_orig_bg_mask->get_active();
     cfg.showKltPoints            = show_klt_points->get_active();
@@ -1046,5 +1078,9 @@ namespace trafficmonitor {
 //Toggle Button connections
   void ViewGtk::on_capture_background_pressed(){}
 
+void ViewGtk::onQuitToggled()
+{
+   exit (EXIT_FAILURE);
+}
 
 }//namespace

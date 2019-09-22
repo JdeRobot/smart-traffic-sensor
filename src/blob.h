@@ -27,6 +27,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/video/tracking.hpp>
 
+
 #define MAX_COUNT 50
 #define MAX_CONTOUR_SIZE 3000
 #define MIN_LOCATION_HISTORY 10
@@ -223,7 +224,22 @@ public:
       current_2d_center.y = (int)(right_corner.y + left_corner.y)/2;
    }
 
+   /**
+    *
+    */
+   double get_probability() const
+   {
+      return probability;
+   }
 
+   /**
+    *
+    */
+   void set_probability(double value)
+   {
+      probability = value;
+      
+   }
    /**
     *
     */
@@ -234,7 +250,35 @@ public:
     */
    int get_id() const {return id;};
    void set_id(int new_id){id=new_id;};
-
+   /**
+    *
+    */
+   /* Indice de la imagen detectada que va de 0 a 4 pues se consultan 5 imágenes, durante 
+      las cuales se espera que el vehiculo en cuestión sea detectado al menos una vez
+   */
+   int get_indice_time() const {return indice_time;};
+   void set_indice_time(int indice){indice_time=indice;};
+   /**
+    *
+    */
+   void init_time() { memset(array_time,0,sizeof(array_time));};
+   /*Se consulta si el vehículo ha sido detectado al menos una vez durante 5 secuencias seguidas*/
+   int cont_time()
+   {
+      int contador = 0;
+      /* Se suman todos los elementos de array_time para ver si el vehículo ha sido detectado
+         al menos una vez durante 5 secuencias seguidas, pues en array_time se va poniendo un 1
+         en sus diferentes posiciones si el vehículo ha sido detectado.
+      */
+      contador = array_time[0] + array_time[1] + array_time[2] + array_time[3] + array_time[4];
+      return contador;
+   };
+   /* Cada posición de array_time se rellenará con un 1 si el vehículo ha sido detectado, para
+      ver desde cont_time si ha sido detectado al menos una vez durante 5 secuencias seguidas
+   */
+   void set_time(int value,int indice){
+	array_time[indice]=value;
+   };
    /**
     *
     */
@@ -269,8 +313,13 @@ public:
 
    void calculate_center_of_mass()
    {
+	
       center_of_mass.x = center_of_mass.x / get_num_points();
       center_of_mass.y = center_of_mass.y / get_num_points();
+	printf("calculate_center_of_mass (%d,%d) num points:  %d \n ",
+          center_of_mass.x,
+          center_of_mass.y,
+          get_num_points());
    };
 
    const Tpoint2D get_center_of_mass() const
@@ -479,6 +528,10 @@ protected:
 
    // Measurements, only one parameter for angle
    CvMat* z_k;
+
+   int indice_time;
+   int array_time[5];
+   double probability;
 };
 }
 #endif

@@ -10,6 +10,8 @@
 #include <colorspacesmm.h>
 #include "blob.h"
 #include "singleton.h"
+#include <math.h>
+#include <numpy/arrayobject.h>
 
 using namespace cv;
 using std::vector;

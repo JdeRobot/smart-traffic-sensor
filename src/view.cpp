@@ -19,6 +19,7 @@
  *  Authors : David Lobato Bravo <dav.lobato@gmail.com>
  *
  */
+#include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <gtkmm.h>
@@ -36,14 +37,16 @@
 #include "datatypes.h"
 #include "view.h"
 #include "arrow.h"
+#include <fstream>
 
 using namespace std;
 
 namespace trafficmonitor {
 
 #define IN_IMAGE(p, image) (p.x>=0 && p.x<image.width && p.y>=0 && p.y<image.height)
-
-static const char* models_colors[MAX_MODELS] = {"Red", "Yellow", "Green", "Blue", "Pink", "Aqua"};
+//std::string DETECTION_FILE_BOX = "../detection_view/";
+//int contador_file_txt_box = 1;
+static const char* models_colors[MAX_MODELS] = {"Red", "Yellow", "Green", "Blue", "Pink", "Aqua","Black","White"};
 
 /**
  *
@@ -303,6 +306,7 @@ void View::show_vehicle_description(Cairo::RefPtr<Cairo::Context> cr, Vehicle* v
 
    if (cfg.showTrackingInfo && (cfg.trackingIsActive() || cfg.classify))
    {
+	
       /** If only tracking then we show only the vehicle identifier, else if
        *  classification is active then show the vehicle classes also. we use the
        *  following ecuacion to get how many digits has the vehicle id. The > 0 check is
@@ -396,6 +400,7 @@ void View::show_blob_description(Cairo::RefPtr<Cairo::Context> cr, Blob* blob)
 
    if (cfg.showTrackingInfo && (cfg.trackingIsActive() || cfg.classify))
    {
+
       /** If only tracking then we show only the blob identifier, else if
        *  classification is active then show the blob classes also. we use the
        *  following ecuacion to get how many digits has the blob id. The > 0 check is
@@ -455,6 +460,9 @@ void View::draw_vehicles(Cairo::RefPtr<Cairo::Context> cr, const vector<Blob*>& 
 
    cr->save();
    cr->set_line_width(1.5);
+   
+   // Crea un fichero de salida
+   // ofstream fs(DETECTION_FILE_BOX+std::to_string(contador_file_txt_box)+".txt"); 
 
    /** Draw tracked blogs*/
    for (i=0; i<vehicles.size(); i++)
@@ -471,6 +479,49 @@ void View::draw_vehicles(Cairo::RefPtr<Cairo::Context> cr, const vector<Blob*>& 
 
       if (cfg.showTrackingInfo)
       {
+   
+	 if(cfg.classify && (cfg.cnnTrackingActive || cfg.kerasTrackingActive || cfg.darknetTrackingActive))
+	 {
+	    
+            /*fs <<vehicle->get_category()<<" "<< vehicle->get_left_corner().x<< " "<< vehicle->get_left_corner().y<<" "<< vehicle->get_right_corner().x-vehicle->get_left_corner().x<<" "<< vehicle->get_right_corner().y-vehicle->get_left_corner().y<<" "<<vehicle->get_probability()<<endl;*/
+
+            string color_desc_box = cfg.classify ? models_colors[vehicle->get_matched_class()] : "Green";
+	    Gdk::Color color(color_desc_box);
+            cr->set_source_rgba(color.get_red_p(),
+                                color.get_green_p(),
+                                color.get_blue_p(),
+                                1.0);
+
+            cr->rectangle(vehicle->get_left_corner().x,
+                          vehicle->get_left_corner().y,
+                          vehicle->get_right_corner().x-vehicle->get_left_corner().x,
+                          vehicle->get_right_corner().y-vehicle->get_left_corner().y);
+
+	    cr->stroke();
+	
+              
+	
+         }
+
+	 if(cfg.showTrajectory)
+	 {
+
+	    string color_desc_box = cfg.classify ? models_colors[vehicle->get_matched_class()] : "Green";
+	    Gdk::Color color(color_desc_box);
+            cr->set_source_rgba(color.get_red_p(),
+                                color.get_green_p(),
+                                color.get_blue_p(),
+                                1.0);
+
+
+	    
+	    cr->move_to(vehicle->get_2d_center().x, vehicle->get_2d_center().y);
+	    cr->line_to(vehicle->get_first_2d_center().x, vehicle->get_first_2d_center().y);
+	
+	    
+	    cr->stroke();
+	
+	 }
          /** Draw the Vehicle rectangle. If the classification is active then we use a different
           *  color for each category.
           */
@@ -514,9 +565,12 @@ void View::draw_vehicles(Cairo::RefPtr<Cairo::Context> cr, const vector<Blob*>& 
          }
 
          cr->fill();
-
-         show_vehicle_description(cr, vehicle);
-         show_vehicle_trajectory(cr,vehicle);
+	 if(cfg.cnnTrackingActive || cfg.kerasTrackingActive || cfg.darknetTrackingActive || 
+		cfg.proximityTrackingActive || cfg.kltTrackingActive)
+         {
+	    show_vehicle_description(cr, vehicle);
+            show_vehicle_trajectory(cr,vehicle);
+	 }
       }
 
       if (cfg.showKltPoints)
@@ -538,7 +592,8 @@ void View::draw_vehicles(Cairo::RefPtr<Cairo::Context> cr, const vector<Blob*>& 
 
       cr->stroke();
    }
-
+   /*fs.close();
+   contador_file_txt_box = contador_file_txt_box + 1;*/
    cr->restore();
 }
 
@@ -664,7 +719,7 @@ void View::display_detection_zone(Cairo::RefPtr<Cairo::Context> cr){
 
    /** Draw All the road segments output*/
    road->get_detection_zone_points(detection_zone_points);
-
+   
    cr->save();
    cr->set_line_width(2.0);
    color = Gdk::Color("Red");

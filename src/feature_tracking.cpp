@@ -31,12 +31,13 @@
 #include "movement_model.h"
 #include "planar_geom.h"
 #include "vehicle.h"
+#include <fstream>
+
+std::string DETECTION_FILE1 = "../detection_klt/";
+int contador_file_txt2 = 0;
 
 CvPoint2D32f* new_points = 0;
-CvPoint2D32f* swap_points;
 char* status = 0;
-int need_to_init = 0;
-int night_mode = 0;
 int flags = 0;
 int add_remove_pt = 0;
 CvPoint pt;
@@ -57,7 +58,7 @@ namespace trafficmonitor{
 /**
  *
  */
-FeatureTracker::FeatureTracker(){blob_temporal_id=1;}
+FeatureTracker::FeatureTracker(){init();}
 
 /**
  *
@@ -83,6 +84,7 @@ void FeatureTracker::init(){
     Blob matched_blob;
     static bool init = false;
 
+
     LOG(" ===> tracking %zu blobs (new blobs %d)\n", tracked_blobs.size(), num_blobs);
 
    if (!init)
@@ -102,7 +104,8 @@ void FeatureTracker::init(){
 
    cvCopy( &tmpImg, image, 0 );
    cvCvtColor( image, grey, CV_BGR2GRAY );
-
+  
+   
    /** Init tracked blobs*/
    for(unsigned int i=0; i<tracked_blobs.size(); i++)
    {
@@ -119,19 +122,21 @@ void FeatureTracker::init(){
    if (road)
       road->get_tracking_zone_finish_line(&tmp_finish_line);
 
+ 
    for (unsigned int i=0; i<tracked_blobs.size(); i++)
    {
       Blob* blob = tracked_blobs[i];
-
+      
       if (blob->is_free())
          continue;
 
       Blob matched_blob;
+    
       if (match_blob(klt_only, blob, tmp_blobs, num_blobs, &matched_blob))
       {
          /** Check if we are close to the finish line, in this case calculate the blob
-          *  trajectory related stats.
-          */
+           *  trajectory related stats.
+           */
          if (GET_LINE_POINT_DISTANCE(tmp_finish_line, blob->get_2d_center()) < MIN_DISTANCE)
          {
             blob->end_of_tracking(timestamp);
@@ -150,6 +155,7 @@ void FeatureTracker::init(){
 
    CV_SWAP( prev_grey, grey, swap_temp );
    CV_SWAP( prev_pyramid, pyramid, swap_temp );
+   contador_file_txt2 = contador_file_txt2 + 1;
 }
 
 /**
@@ -164,23 +170,25 @@ CvRect FeatureTracker::get_bounding_rect(CvPoint2D32f* points, int count)
    left_corner.y = INT_MAX;
    right_corner.x = 0;
    right_corner.y = 0;
-
+   
    for(int i=0; i<count; i++)
    {
+      
       if (points[i].x>0 && points[i].y>0)
       {
-         Tpoint2D p;
+	 Tpoint2D p;
          p.x = (int)points[i].x;
          p.y = (int)points[i].y;
          if (!MovModel::Instance()->movement_on(p))
          {
             continue;
          }
-
+	
          left_corner.x = min(left_corner.x, points[i].x);
          left_corner.y = min(left_corner.y, points[i].y);
          right_corner.x = max(right_corner.x,  points[i].x);
          right_corner.y = max(right_corner.y, points[i].y);
+
       }
    }
 
@@ -207,6 +215,8 @@ void FeatureTracker::process_detected_blobs(IplImage* frame,
    memset(free_positions, 0, sizeof(free_positions));
    int k=0;
 
+   // Crea un fichero de salida
+    ofstream fs(DETECTION_FILE1+std::to_string(contador_file_txt2)+".txt"); 
    LOG("Processing detected blobs ..\n");
 
    /** Populate free positions*/
@@ -235,10 +245,14 @@ void FeatureTracker::process_detected_blobs(IplImage* frame,
             Blob* blob = find_blob(tracked_blobs, tmp_blobs[i]->tracking_blobs_id[0]);
             if (blob)
             {
+		Vehicle* curr_vehicle = static_cast<Vehicle*> (blob);
                blob->ocluded = false;
                LOG("blob %d found correctly, updating feature points\n", tmp_blobs[i]->tracking_blobs_id[0]);
                blob->track(*tmp_blobs[i]);
                get_good_features(grey,blob);
+	       /*if(blob->get_probability()==0)
+		  blob->set_probability(1);*/
+               fs <<curr_vehicle->get_category()<<" "<< blob->get_rect().x<< " "<< blob->get_rect().y<<" "<< blob->get_rect().width<<" "<< blob->get_rect().height<<" "<<1<<endl;
             }
             else
             {
@@ -269,6 +283,8 @@ void FeatureTracker::process_detected_blobs(IplImage* frame,
 
 
                   blob->ocluded = true;
+		  Vehicle* curr_vehicle = static_cast<Vehicle*> (blob);
+		  fs <<curr_vehicle->get_category()<<" "<< blob->get_rect().x<< " "<< blob->get_rect().y<<" "<< blob->get_rect().width<<" "<< blob->get_rect().height<<" "<<1<<endl;
                }
                else
                {
@@ -310,6 +326,9 @@ void FeatureTracker::process_detected_blobs(IplImage* frame,
                    tracked_blobs[free_pos]->get_current_3d_center().Y,
                    tracked_blobs[free_pos]->get_current_3d_center().Z,
                    (unsigned int)tracked_blobs[free_pos]->get_ingress_timestamp().tv_usec);
+		if(blob->get_probability()==0)
+		  blob->set_probability(1);
+               fs <<curr_vehicle->get_category()<<" "<< blob->get_rect().x<< " "<< blob->get_rect().y<<" "<< blob->get_rect().width<<" "<< blob->get_rect().height<<" "<<blob->get_probability()<<endl;
          }
          else
          {
@@ -324,7 +343,7 @@ void FeatureTracker::process_detected_blobs(IplImage* frame,
       //IF
 
    }//FOR
-
+   fs.close();
    int num_of_fusions = merge_vehicles(tracked_blobs);
    if (num_of_fusions > 0)
    {
@@ -463,6 +482,7 @@ bool FeatureTracker::vote_the_nearest_blob(vector<Blob*>& tmp_blobs, CvPoint2D32
       }
    }
 
+
    if (idx > 0)
    {
       LOG("The blob with the highest votes is idx(%d) size(%d:%d) votes=%d\n"
@@ -538,7 +558,7 @@ void FeatureTracker::get_good_features(IplImage* grey, Blob* blob)
 
 bool FeatureTracker::match_vehicle_in_detection_zone(Blob* blob, vector<Blob*>& tmp_blobs, unsigned int num_blobs, Blob* matched_blob)
 {
-   LOG(" > in detection zone \n");
+   //LOG(" > in detection zone \n");
 
    /****
     *** Detection zone:
@@ -554,7 +574,9 @@ bool FeatureTracker::match_vehicle_in_detection_zone(Blob* blob, vector<Blob*>& 
    {
       if (not tmp_blobs[j]->already_matched())
       {
+ 	
          tmp = DISTANCE_2D(blob->get_2d_center(), tmp_blobs[j]->get_2d_center());
+	
          if (tmp<distance)
          {
             distance = tmp;
@@ -566,7 +588,7 @@ bool FeatureTracker::match_vehicle_in_detection_zone(Blob* blob, vector<Blob*>& 
 
    if (pos>=0)
    {
-      LOG("Matched with the blob %d \n",pos);
+      //LOG("Matched with the blob %d \n",pos);
       *matched_blob = *tmp_blobs[pos];
       tmp_blobs[pos]->tracked_by(*blob);
       tmp_blobs[pos]->set_matched(true);
@@ -582,7 +604,7 @@ bool FeatureTracker::match_vehicle_in_detection_zone(Blob* blob, vector<Blob*>& 
 bool FeatureTracker::match_blob_using_klt(Blob* blob, vector<Blob*>& tmp_blobs, unsigned int num_blobs, Blob* matched_blob)
 {
    int count = MAX_COUNT;
-
+   // LOG("------match_blob_using_klt----- \n");
    memset(new_points, 0, MAX_COUNT*sizeof(CvPoint2D32f));
    cvCalcOpticalFlowPyrLK(prev_grey,
                           grey,
@@ -592,7 +614,7 @@ bool FeatureTracker::match_blob_using_klt(Blob* blob, vector<Blob*>& tmp_blobs, 
                           new_points,
                           blob->num_features,
                           cvSize(win_size,win_size),
-                          5,
+                          3,
                           status,
                           0,
                           cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 20, 0.1),
@@ -682,7 +704,7 @@ bool FeatureTracker::match_blob_using_klt(Blob* blob, vector<Blob*>& tmp_blobs, 
 bool FeatureTracker::match_blob(bool klt_only, Blob* blob, vector<Blob*>& tmp_blobs, unsigned int num_blobs, Blob* matched_blob)
 {
    Road* road = Road::Instance();
-
+   
    if (road->in_detection_zone(blob->get_2d_center()))
    {
       return match_vehicle_in_detection_zone(blob, tmp_blobs, num_blobs, matched_blob);
@@ -692,7 +714,8 @@ bool FeatureTracker::match_blob(bool klt_only, Blob* blob, vector<Blob*>& tmp_bl
      if (klt_only)
        return match_blob_using_klt(blob, tmp_blobs, num_blobs, matched_blob);
      else
-       return (match_blob_using_proximity(blob, tmp_blobs, num_blobs, matched_blob) || match_blob_using_klt(blob, tmp_blobs, num_blobs, matched_blob));
+     	return (match_blob_using_proximity(blob, tmp_blobs, num_blobs, matched_blob) || match_blob_using_klt(blob, tmp_blobs, num_blobs, 		   matched_blob));
+
    }
 }
 
@@ -704,11 +727,14 @@ bool FeatureTracker::match_blob_using_proximity(Blob* blob, vector<Blob*>& tmp_b
    float distance = MAX_DISTANCE;
    int pos=-1;
    Tpoint2D ec = blob->get_2d_center(); // Ellipse center
+   //LOG("------match_blob_using_proximity----- \n");
    Road* road = Road::Instance();
-
+  
    for (unsigned int j=0; j<num_blobs; j++)
    {
-      if (tmp_blobs[j]->is_free() || !road->in_tracking_zone(tmp_blobs[j]->get_2d_center()))
+      //if (tmp_blobs[j]->is_free())// || !road->in_tracking_zone(tmp_blobs[j]->get_2d_center()))
+      //if (!road->in_tracking_zone(tmp_blobs[j]->get_2d_center()))
+       if(tmp_blobs[j]->already_matched())
       {
          continue;
       }
@@ -771,4 +797,6 @@ void FeatureTracker::get_uniform_points(Blob* blob){
 
    blob->num_features = points_cntr;
 }
+
+
 }

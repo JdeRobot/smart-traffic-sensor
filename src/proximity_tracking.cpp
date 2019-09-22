@@ -70,6 +70,7 @@ void ProximityTracker::track_blobs(colorspaces::Image& new_frame
    LOG("--> tracking %zu blobs\n", tracked_blobs.size());
 
    /** Init tracked blobs*/
+   
    for(unsigned int i=0; i<tracked_blobs.size(); i++)
    {
       tracked_blobs[i]->set_matched(false);
@@ -81,7 +82,7 @@ void ProximityTracker::track_blobs(colorspaces::Image& new_frame
    {
       road->get_tracking_zone_finish_line(&finish_line);
    }
-
+   
    for (unsigned int i=0; i<tracked_blobs.size(); i++)
    {
       Blob* blob = tracked_blobs[i];
@@ -94,6 +95,7 @@ void ProximityTracker::track_blobs(colorspaces::Image& new_frame
       Blob matched_blob;
       if (match_vehicle(blob, tmp_blobs, num_blobs, &matched_blob))
       {
+	
          /** Check if we are close to the finish line, in this case calculate the blob
           *  trajectory related stats.
           */
@@ -104,6 +106,7 @@ void ProximityTracker::track_blobs(colorspaces::Image& new_frame
       }
       else
       {
+	
          Tvector tmp;
          get_vector(&tmp, blob->get_first_2d_center(), blob->get_2d_center());
          add_vector(&tmp, &mov_direction);
@@ -274,7 +277,7 @@ bool ProximityTracker::match_vehicle(Blob* blob, vector<Blob*>& tmp_blobs, unsig
    float distance = MAX_DISTANCE;
    int pos=-1;
    Tpoint2D ec = blob->get_2d_center(); // Ellipse center
-
+   
    for (unsigned int j=0; j<num_blobs; j++)
    {
       if (not tmp_blobs[j]->already_matched())
@@ -283,13 +286,16 @@ bool ProximityTracker::match_vehicle(Blob* blob, vector<Blob*>& tmp_blobs, unsig
 
          if (blob->IsBlobInProximityElipse(tmp_blobs[j]) && (inter_blob_2d_dis < distance))
          {
+	    
             distance = inter_blob_2d_dis;
             pos = j;
+	    
          }
          else if (inter_blob_2d_dis < distance)
          {
             distance = inter_blob_2d_dis;
             pos = j;
+
          }
       }
 

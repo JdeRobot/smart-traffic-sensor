@@ -31,8 +31,10 @@ typedef enum models_ids
    MOTORCYCLE,
    CAR,
    VAN,
-   TRUCK,
    BUS,
+   TRUCK,
+   SMALL_TRUCK,
+   TANK_TRUCK,
    MAX_MODELS
 } tvehicle_category;
 

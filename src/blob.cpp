@@ -8,6 +8,7 @@
 #include "planar_geom.h"
 #include "blob.h"
 
+
 #define DISTANCE(a,b) sqrt((a.X-b.X)*(a.X-b.X) + (a.Y-b.Y)*(a.Y-b.Y))
 #define MIN_TRACKING_DISTANCE 20
 
@@ -201,31 +202,34 @@ bool Blob::IsBlobInProximityElipse(Blob* blob) const
    //TODO: Comment
    if (GetDirection(direction))
    {
-      float w = min(max(rect.height/2, 4), 15);
+      //float w = min(max(rect.height/2, 4), 80);
+      float w = max(rect.height/2, 4);
       float h = w/2;
       float theta = atanf(direction[1]/direction[0]);
       float u = cos(theta)*(tmp_blob_center.x - ec.x) + sin(theta)*(tmp_blob_center.y - ec.y);
       float v = cos(theta)*(tmp_blob_center.y - ec.y) - sin(theta)*(tmp_blob_center.x - ec.x);
       distance = (u/w)*(u/w) + (v/h)*(v/h);
-      // printf("ellipse distance is %f \n",distance);
+      /*printf("ellipse distance is %f , ec.x = %d , ec.y = %d , tmp_blob_center.x = %d , tmp_blob_center.y = %d \n",distance, ec.x, ec.y,
+	tmp_blob_center.x,tmp_blob_center.y);*/
    }
    else
    {
       // (x - center_x)^2 + (y - center_y)^2 < radius^2
-      float w = min(max(rect.height, 4), 20);
+      //float w = min(max(rect.height, 4), 80);
+      float w = max(rect.height, 4);
       float h = (w*w)/4; // (w/2) ^ 2
       float u = (tmp_blob_center.y - ec.y);
       float v = (tmp_blob_center.x - ec.x);
       distance = (u*u)/h + (v*v)/h;
-      // printf("circle distance is %f radius=%f (%d:%d) -> (%d:%d)\n"
-      //        ,distance
-      //        ,w/2
-      //        ,tmp_blob_center.x
-      //        ,tmp_blob_center.y
-      //        ,ec.x
-      //        ,ec.y);
+      /*printf("circle distance is %f radius=%f (%d:%d) -> (%d:%d), rect.height = %d \n"
+              ,distance
+              ,w/2
+              ,tmp_blob_center.x
+              ,tmp_blob_center.y
+              ,ec.x
+              ,ec.y,rect.height);*/
    }
-
+   //std::cout<<"distance IsBlobInProximityElipse : "<< distance<< std::endl;
    return (distance <= 1);
 }
 
@@ -381,6 +385,7 @@ void Blob::track(Blob& blob)
    set_2d_center(blob.get_2d_center());
    set_left_corner(blob.get_left_corner());
    set_right_corner(blob.get_right_corner());
+   set_probability(blob.get_probability());
    num_points = blob.get_num_points();
    center_of_mass = blob.get_center_of_mass();
 
@@ -419,6 +424,13 @@ void Blob::update_blob_box_center(){
 
    current_2d_center.x = (int)(right_corner.x + left_corner.x)/2;
    current_2d_center.y = (int)(right_corner.y + left_corner.y)/2;
+   printf("update_blob_box_center is right(%d,%d) left (%d,%d) center (%d,%d) \n ",
+          right_corner.x,
+          right_corner.y,
+          left_corner.x,
+          left_corner.y,
+          current_2d_center.x,
+	  current_2d_center.y);
    calculate_center_of_mass();
 }
 

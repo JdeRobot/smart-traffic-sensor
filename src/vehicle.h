@@ -49,7 +49,7 @@ public:
    /**
     *
     */
-   bool is_classified() const {return INVALID_VEHICLE_CLASS == category;};
+   bool is_classified() const {return INVALID_VEHICLE_CLASS == category_vehicle;};
 
    /**
     *
@@ -59,12 +59,12 @@ public:
    /**
     *
     */
-   void set_category(tvehicle_category new_category){category = new_category;};
+   void set_category(tvehicle_category new_category){category_vehicle = new_category;};
 
    /**
     *
     */
-   tvehicle_category get_category(){return category;};
+   tvehicle_category get_category(){return category_vehicle;};
 
    /**
     *
@@ -84,7 +84,7 @@ public:
    /**
     *
     */
-   virtual void end_of_tracking(timeval timestamp);
+   virtual void end_of_tracking(timeval timestamp );
 
    /**
     *
@@ -102,10 +102,14 @@ public:
     */
    const Tpolygon* get_projection(){return &projection;};
 
+   /* vehicle_tracking_klt valdrá 0 si se realizan las detecciones mediante Deep Learning 
+      y si se hacen mediante el antiguo método valdrá 1 */
+   bool set_klt_vehicle(bool klt){vehicle_tracking_klt = klt;};
+
 private:
    
    /** This field is updated by the best matched class in each iteration.*/
-   tvehicle_category category;
+   tvehicle_category category_vehicle;
 
    /* The first_v3d_center,current_v3d_center and in_timestamp are used to estimate the blob speed*/
    float speed;
@@ -119,6 +123,8 @@ private:
 
    /** Store the 2D projection of the 3D vehicle in each classification iteration*/
    Tpolygon projection;
+
+   bool vehicle_tracking_klt;
 };
 }
 
