@@ -45,11 +45,6 @@ int win_size_deep = 10;
 
 
 #define MAX_DISTANCE_VEHICLE 10000
-<<<<<<< HEAD
-=======
-#define MAX_DISTANCE_TRACKING_FAR 10
-#define MAX_DISTANCE_TRACKING_NEAR 40
->>>>>>> c57926d504fdefd956f161aa922c262959453974
 
 namespace trafficmonitor{
 
@@ -522,13 +517,6 @@ bool DeepLearningTracker::match_blob_using_distance_deep_learning(Blob* blob, ve
    int prueba = 0;
    Tpoint2D ec = blob->get_2d_center(); // Ellipse center
 
-<<<<<<< HEAD
-=======
-   if(blob->size()>400)
-       max_distance_vehicle = MAX_DISTANCE_TRACKING_NEAR;
-   else
-       max_distance_vehicle = MAX_DISTANCE_TRACKING_FAR;
->>>>>>> c57926d504fdefd956f161aa922c262959453974
 
    for (unsigned int j=0; j<num_blobs; j++)
    {
