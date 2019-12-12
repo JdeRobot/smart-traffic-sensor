@@ -13,7 +13,7 @@ Smart-Traffic-Sensor needs the next dependencies:
 
 1. OpenCV 3.2 with contrib
 2. Cuda
-3. Tensorflow
+3. Tensorflow (version 1.12.0)
     ```bash
     # CPU
     sudo pip install tensorflow
@@ -22,7 +22,7 @@ Smart-Traffic-Sensor needs the next dependencies:
     sudo pip install tensorflow-gpu
     ```
 
-4. Keras
+4. Keras (version 2.2.4)
     ```bash
     sudo pip install keras
     ```
