@@ -29,8 +29,8 @@ Smart-Traffic-Sensor needs the next dependencies:
 5. Darknet. It is an open source neural network framework written in C. Darknet supports both GPU and CPU builds. You can install it following the instructions below:
 
     ```bash
-      git clone https://github.com/JdeRobot/darknet
-      cd darknet
+      git clone https://github.com/JdeRobot/smart-traffic-sensor
+      cd smart-traffic-sensor/darknet
       mkdir build && cd build
     #For GPU users:
       cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DUSE_GPU=ON ..
